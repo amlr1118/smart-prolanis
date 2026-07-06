@@ -26,8 +26,12 @@ Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
-       return $request->user(); // INI YANG BENAR;
+        return $request->user(); // INI YANG BENAR;
     });
+
+    Route::get('/pengguna', [LoginController::class, 'index']);
+    Route::put('/update-pengguna/{id}', [LoginController::class, 'updateDataPengguna']);
+    Route::delete('/hapus-pengguna/{id}', [LoginController::class, 'hapusDataPengguna']);
 
 
     Route::post('/logout', [LoginController::class, 'logout']);
@@ -40,6 +44,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/tambah-peserta-prolanis', [PesertaProlanisController::class, 'tambahDataPeserta']);
     Route::put('/update-peserta-prolanis/{id}', [PesertaProlanisController::class, 'updateDataPeserta']);
     Route::delete('/hapus-peserta-prolanis/{id}', [PesertaProlanisController::class, 'hapusDataPeserta']);
-
 });
-

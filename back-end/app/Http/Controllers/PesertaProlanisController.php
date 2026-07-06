@@ -11,7 +11,7 @@ class PesertaProlanisController extends Controller
     function tampilkanSemuaData(Request $request)
     {
         $search = $request->query('search');
-        
+
         // Buat query builder
         $query = PesertaProlanisModel::query();
 
@@ -23,7 +23,7 @@ class PesertaProlanisController extends Controller
 
         // Lakukan pagination pada hasil filter
         $peserta = $query->latest()->paginate(10);
-        
+
         return response()->json($peserta);
     }
 

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/OtherPage/NotFound";
 import PesertaProlanisPages from "./pages/MasterData/PesertaProlanisPages";
+import PenggunaComponent from "./components/master-data/PenggunaComponent";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
@@ -24,6 +25,14 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <Home />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/data-pengguna"
+              element={
+                <PrivateRoute>
+                  <PenggunaComponent />
                 </PrivateRoute>
               }
             />

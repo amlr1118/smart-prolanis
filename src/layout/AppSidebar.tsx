@@ -28,7 +28,7 @@ const navItems: NavItem[] = [
     name: "Master Data",
     icon: <TableIcon />,
     subItems: [
-      // { name: "Basic Table", path: "/basic-tables", pro: false },
+      { name: "Data Pengguna", path: "/data-pengguna", pro: false },
       { name: "Peserta Prolanis", path: "/peserta-prolanis", pro: false },
     ],
   },
