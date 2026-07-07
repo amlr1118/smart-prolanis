@@ -9,11 +9,16 @@ class PesertaProlanisModel extends Model
 {
     use HasFactory;
 
-     protected $fillable = [
+    protected $fillable = [
         'no_bpjs',
         'nama',
         'alamat',
         'no_hp',
         'diagnosa',
     ];
+
+    public function pemeriksaans()
+    {
+        return $this->hasMany(PemeriksaanModel::class, 'pesertaid');
+    }
 }

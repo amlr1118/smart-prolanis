@@ -73,7 +73,7 @@ class LoginController extends Controller
 
         // Simpan data dengan password terenkripsi
 
-        $pengguna->User::update([
+        $pengguna->update([
             'userid' => $request->userid,
             'name' => $request->name,
             'email' => $request->email,

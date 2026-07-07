@@ -309,7 +309,7 @@ export default function PenggunaComponent() {
                 d="M12 5v14m7-7H5"
               />
             </svg>
-            Tambah Peserta
+            Tambah Pengguna
           </button>
         </div>
 
@@ -455,7 +455,7 @@ export default function PenggunaComponent() {
                   className={`mt-2 ${errors.name ? "border-red-500" : ""}`}
                   placeholder="Nama Pengguna"
                 />
-                {errors.nama && (
+                {errors.name && (
                   <span className="text-xs text-red-500 mt-1">
                     {errors.name[0]}
                   </span>
@@ -471,7 +471,7 @@ export default function PenggunaComponent() {
                   onChange={handleSelectChange}
                   className={`dark:bg-dark-900 ${errors.role ? "border-red-500" : ""}`}
                 />
-                {errors.diagnosa && (
+                {errors.role && (
                   <span className="text-xs text-red-500 mt-1">
                     {errors.role[0]}
                   </span>
@@ -485,10 +485,10 @@ export default function PenggunaComponent() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`mt-2 ${errors.alamat ? "border-red-500" : ""}`}
+                  className={`mt-2 ${errors.email ? "border-red-500" : ""}`}
                   placeholder="Email Pengguna"
                 />
-                {errors.alamat && (
+                {errors.email && (
                   <span className="text-xs text-red-500 mt-1">
                     {errors.email[0]}
                   </span>

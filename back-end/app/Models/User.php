@@ -25,6 +25,18 @@ class User extends Authenticatable
         'password',
     ];
 
+    // Sebagai dokter
+    public function pemeriksaanSebagaiDokter()
+    {
+        return $this->hasMany(PemeriksaanModel::class, 'dokterid');
+    }
+
+    // Sebagai perawat
+    public function pemeriksaanSebagaiPerawat()
+    {
+        return $this->hasMany(PemeriksaanModel::class, 'perawatid');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
