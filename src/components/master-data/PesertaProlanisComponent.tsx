@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+//import axios from "axios";
 import Swal from "sweetalert2";
 
 import { useModal } from "../../hooks/useModal";
@@ -14,6 +14,8 @@ interface PesertaProlanis {
   id: number;
   no_bpjs: string;
   nama: string;
+  jenis_kelamin: string;
+  usia: string;
   alamat: string;
   no_hp: string;
   diagnosa: string;
@@ -35,15 +37,21 @@ export default function PesertaProlanisComponent() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const options = [
+  const optionsDiagnosa = [
     { value: "Hipertensi", label: "Hipertensi" },
     { value: "Diabetes", label: "Diabetes" },
+  ];
+  const optionJenisKelamin =[
+     { value: "Pria", label: "Pria" },
+    { value: "Wanita", label: "Wanita" },
   ];
 
   // --- STATE BARU UNTUK FORM & VALIDASI ---
   const [formData, setFormData] = useState({
     no_bpjs: "",
     nama: "",
+    jenis_kelamin: "",
+    usia: "",
     alamat: "",
     no_hp: "",
     diagnosa: "",
@@ -53,7 +61,16 @@ export default function PesertaProlanisComponent() {
   const [isSaving, setIsSaving] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
 
-  const handleSelectChange = (value: string) => {
+  const handleSelectChangeJenisKelamin = (value: string) => {
+    setFormData((prev) => ({ ...prev, jenis_kelamin: value }));
+
+    // (Opsional) Jika ada error diagnosa sebelumnya, hilangkan saat user memilih
+    if (errors.jenis_kelamin) {
+      setErrors((prev) => ({ ...prev, jenis_kelamin: [] }));
+    }
+  };
+
+  const handleSelectChangeDiagnosa = (value: string) => {
     setFormData((prev) => ({ ...prev, diagnosa: value }));
 
     // (Opsional) Jika ada error diagnosa sebelumnya, hilangkan saat user memilih
@@ -131,7 +148,15 @@ export default function PesertaProlanisComponent() {
 
   const handleAdd = () => {
     setEditId(null); // Set mode tambah
-    setFormData({ no_bpjs: "", nama: "", alamat: "", no_hp: "", diagnosa: "" }); // Kosongkan form
+    setFormData({
+      no_bpjs: "",
+      nama: "",
+      jenis_kelamin: "",
+      usia: "",
+      alamat: "",
+      no_hp: "",
+      diagnosa: "",
+    }); // Kosongkan form
     setErrors({});
     openModal();
   };
@@ -142,6 +167,8 @@ export default function PesertaProlanisComponent() {
     setFormData({
       no_bpjs: item.no_bpjs,
       nama: item.nama,
+      jenis_kelamin: item.jenis_kelamin,
+      usia: item.usia,
       alamat: item.alamat,
       no_hp: item.no_hp,
       diagnosa: item.diagnosa,
@@ -174,6 +201,8 @@ export default function PesertaProlanisComponent() {
       setFormData({
         no_bpjs: "",
         nama: "",
+        jenis_kelamin: "",
+        usia: "",
         alamat: "",
         no_hp: "",
         diagnosa: "",
@@ -197,7 +226,15 @@ export default function PesertaProlanisComponent() {
 
   const handleCloseModal = () => {
     setEditId(null);
-    setFormData({ no_bpjs: "", nama: "", alamat: "", no_hp: "", diagnosa: "" });
+    setFormData({
+      no_bpjs: "",
+      nama: "",
+      jenis_kelamin: "",
+      usia: "",
+      alamat: "",
+      no_hp: "",
+      diagnosa: "",
+    });
     setErrors({});
     closeModal();
   };
@@ -325,6 +362,8 @@ export default function PesertaProlanisComponent() {
                 <tr>
                   <th className="px-6 py-3 font-semibold">No BPJS</th>
                   <th className="px-6 py-3 font-semibold">Nama</th>
+                  <th className="px-6 py-3 font-semibold">Jenis Kelamin</th>
+                  <th className="px-6 py-3 font-semibold">Usia</th>
                   <th className="px-6 py-3 font-semibold">Alamat</th>
                   <th className="px-6 py-3 font-semibold">No HP</th>
                   <th className="px-6 py-3 font-semibold">Diagnosa</th>
@@ -350,6 +389,8 @@ export default function PesertaProlanisComponent() {
                     <tr key={item.id} className="border-b hover:bg-gray-50">
                       <td className="px-6 py-4">{item.no_bpjs}</td>
                       <td className="px-6 py-4">{item.nama}</td>
+                      <td className="px-6 py-4">{item.jenis_kelamin}</td>
+                      <td className="px-6 py-4">{item.usia}</td>
                       <td className="px-6 py-4">{item.alamat}</td>
                       <td className="px-6 py-4">{item.no_hp}</td>
                       <td className="px-6 py-4">
@@ -471,6 +512,39 @@ export default function PesertaProlanisComponent() {
               </div>
 
               <div>
+                <Label>Jenis Kelamin</Label>
+                <Select
+                  options={optionJenisKelamin}
+                  placeholder="Pilih Jenis Kelamin"
+                  value={formData.jenis_kelamin}
+                  onChange={handleSelectChangeJenisKelamin}
+                  className={`dark:bg-dark-900 ${errors.jenis_kelamin ? "border-red-500" : ""}`}
+                />
+                {errors.jenis_kelamin && (
+                  <span className="text-xs text-red-500 mt-1">
+                    {errors.jenis_kelamin[0]}
+                  </span>
+                )}
+              </div>
+
+              <div>
+                <Label>Usia</Label>
+                <Input
+                  name="usia"
+                  type="text"
+                  value={formData.usia}
+                  onChange={handleInputChange}
+                  className={`mt-2 ${errors.usia ? "border-red-500" : ""}`}
+                  placeholder="Usia Peserta"
+                />
+                {errors.usia && (
+                  <span className="text-xs text-red-500 mt-1">
+                    {errors.usia[0]}
+                  </span>
+                )}
+              </div>
+
+              <div>
                 <Label>Alamat</Label>
                 <Input
                   name="alamat"
@@ -507,10 +581,10 @@ export default function PesertaProlanisComponent() {
               <div>
                 <Label>Diagnosa</Label>
                 <Select
-                  options={options}
+                  options={optionsDiagnosa}
                   placeholder="Pilih Diagnosa"
                   value={formData.diagnosa}
-                  onChange={handleSelectChange}
+                  onChange={handleSelectChangeDiagnosa}
                   className={`dark:bg-dark-900 ${errors.diagnosa ? "border-red-500" : ""}`}
                 />
                 {errors.diagnosa && (

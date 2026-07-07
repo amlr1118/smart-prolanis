@@ -20,6 +20,7 @@ class PemeriksaanModel extends Model
         'tensi_diastolik',
         'gula_darah_puasa',
         'status_gula_darah',
+        'aktivitas',
     ];
 
     public function peserta()

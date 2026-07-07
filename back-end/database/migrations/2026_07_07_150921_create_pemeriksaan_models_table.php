@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('tensi_diastolik');
             $table->integer('gula_darah_puasa');
             $table->string('status_gula_darah');
+            $table->string('aktivitas');
             $table->timestamps();
 
             // Relasi ke tabel users

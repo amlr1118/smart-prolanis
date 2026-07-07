@@ -22,21 +22,23 @@ class PesertaProlanisModelFactory extends Factory
     public function definition(): array
     {
         return [
-            // Membuat tepat 13 digit angka acak untuk BPJS
+
             'no_bpjs' => $this->faker->numerify('#############'),
 
-            // Nama acak
             'nama' => $this->faker->name(),
 
-            // Alamat acak
+            'jenis_kelamin' => $this->faker->randomElement([
+                'Laki-laki',
+                'Perempuan'
+            ]),
+
+            'usia' => $this->faker->numberBetween(45, 75),
+
             'alamat' => $this->faker->address(),
 
-            // Format nomor HP Indonesia (diawali 08 dan diikuti 9-11 angka acak)
-            'no_hp' => $this->faker->numerify('08###########'),
+            'no_hp' => $this->faker->numerify('08##########'),
 
-            // Memilih secara acak antara Diabetes atau Hipertensi
-            'diagnosa' => $this->faker->randomElement(['Diabetes', 'Hipertensi']),
-
+            'diagnosa' => 'Diabetes',
         ];
     }
 }

@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('peserta_prolanis_models', function (Blueprint $table) {
+        Schema::create('data_pangan_lokal_models', function (Blueprint $table) {
             $table->id();
-            $table->string('no_bpjs');
-            $table->string('nama');
-            $table->string('jenis_kelamin');
-            $table->string('usia');
-            $table->string('alamat');
-            $table->string('no_hp');
-            $table->string('diagnosa');
+            $table->string('nama_pangan');
+            $table->string('kategori');
+            $table->float('kalori_per_100g');
+            $table->float('karbo_per_100g');
+            $table->string('satuan_porsi');
+            $table->integer('berat_per_porsi');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('peserta_prolanis_models');
+        Schema::dropIfExists('data_pangan_lokal_models');
     }
 };

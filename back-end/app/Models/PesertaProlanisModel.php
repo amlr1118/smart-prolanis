@@ -12,6 +12,8 @@ class PesertaProlanisModel extends Model
     protected $fillable = [
         'no_bpjs',
         'nama',
+        'jenis_kelamin',
+        'usia',
         'alamat',
         'no_hp',
         'diagnosa',
