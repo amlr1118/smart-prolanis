@@ -30,11 +30,15 @@ class PemeriksaanModel extends Model
 
     public function perawat()
     {
-        return $this->belongsTo(User::class, 'perawatid');
+        return $this->belongsTo(User::class, 'perawatid','id');
     }
 
     public function dokter()
     {
-        return $this->belongsTo(User::class, 'dokterid');
+        return $this->belongsTo(User::class, 'dokterid','id');
+    }
+
+    public function rekomendasiDiet(){
+        return $this->hasMany(RekomendasiDietModel::class, 'pemeriksaanid');
     }
 }
