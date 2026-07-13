@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string('alamat');
             $table->string('no_hp');
             $table->string('diagnosa');
+            $table->boolean('is_home_visit')->default(false);
             $table->timestamps();
+
+            
         });
     }
 

@@ -42,6 +42,10 @@ class User extends Authenticatable
         return $this->hasMany(RekomendasiDietModel::class, 'giziid');
     }
 
+     public function relasiUserkeKegiatan(){
+        return $this->hasMany(JadwalKegiatanModel::class,'petugasid');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

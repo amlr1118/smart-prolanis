@@ -23,4 +23,9 @@ class PesertaProlanisModel extends Model
     {
         return $this->hasMany(PemeriksaanModel::class, 'pesertaid');
     }
+
+    public function relasikeAbsen()
+    {
+        return $this->hasMany(AbsenModel::class, 'pesertaid');
+    }
 }

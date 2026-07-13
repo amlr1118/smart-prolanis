@@ -16,6 +16,7 @@ class DataPanganLokalModel extends Model
         'karbo_per_100g',
         'satuan_porsi',
         'berat_per_porsi',
+        'indeks_glikemik',
 
     ];
 

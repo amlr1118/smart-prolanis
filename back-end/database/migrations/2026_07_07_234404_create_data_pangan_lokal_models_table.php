@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float('karbo_per_100g');
             $table->string('satuan_porsi');
             $table->integer('berat_per_porsi');
+            $table->string('index_glikemik');
             $table->timestamps();
         });
     }
