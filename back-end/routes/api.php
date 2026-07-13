@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\JadwalKegiatanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PesertaProlanisController;
 use App\Models\User;
@@ -44,4 +46,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/tambah-peserta-prolanis', [PesertaProlanisController::class, 'tambahDataPeserta']);
     Route::put('/update-peserta-prolanis/{id}', [PesertaProlanisController::class, 'updateDataPeserta']);
     Route::delete('/hapus-peserta-prolanis/{id}', [PesertaProlanisController::class, 'hapusDataPeserta']);
+
+    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index']);
+    Route::get('/simpan-jadwal-kegiatan', [JadwalKegiatanController::class, 'store']);
+    Route::get('/update-jadwal-kegiatan', [JadwalKegiatanController::class, 'update']);
+    Route::get('/hapus-jadwal-kegiatan', [JadwalKegiatanController::class, 'destroy']);
+
+    Route::get('/absen', [AbsenController::class, 'index']);
+    
+    
 });
+
+
+
+
+
+
+

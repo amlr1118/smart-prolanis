@@ -39,6 +39,9 @@ export default function PenggunaComponent() {
     { value: "1", label: "Dokter" },
     { value: "2", label: "Perawat" },
     { value: "3", label: "Gizi" },
+    { value: "4", label: "Apoteker" },
+    { value: "5", label: "Administrasi" },
+
   ];
 
   // --- STATE BARU UNTUK FORM & VALIDASI ---
