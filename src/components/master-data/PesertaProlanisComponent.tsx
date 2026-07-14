@@ -9,13 +9,14 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Select from "../form/Select";
 import api from "../../services/api";
+import DatePicker from "../form/date-picker";
 
 interface PesertaProlanis {
   id: number;
   no_bpjs: string;
   nama: string;
   jenis_kelamin: string;
-  usia: string;
+  tanggal_lahir: string;
   alamat: string;
   no_hp: string;
   diagnosa: string;
@@ -41,8 +42,8 @@ export default function PesertaProlanisComponent() {
     { value: "Hipertensi", label: "Hipertensi" },
     { value: "Diabetes", label: "Diabetes" },
   ];
-  const optionJenisKelamin =[
-     { value: "Pria", label: "Pria" },
+  const optionJenisKelamin = [
+    { value: "Pria", label: "Pria" },
     { value: "Wanita", label: "Wanita" },
   ];
 
@@ -51,7 +52,7 @@ export default function PesertaProlanisComponent() {
     no_bpjs: "",
     nama: "",
     jenis_kelamin: "",
-    usia: "",
+    tanggal_lahir: "",
     alamat: "",
     no_hp: "",
     diagnosa: "",
@@ -135,6 +136,20 @@ export default function PesertaProlanisComponent() {
     }
   };
 
+  const handleTanggalLahirChange = (date: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      tanggal_lahir: date,
+    }));
+
+    if (errors.tanggal_lahir) {
+      setErrors((prev) => ({
+        ...prev,
+        tanggal_lahir: [],
+      }));
+    }
+  };
+
   // --- FUNGSI HANDLE INPUT FORM ---
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -152,7 +167,7 @@ export default function PesertaProlanisComponent() {
       no_bpjs: "",
       nama: "",
       jenis_kelamin: "",
-      usia: "",
+      tanggal_lahir: "",
       alamat: "",
       no_hp: "",
       diagnosa: "",
@@ -168,7 +183,7 @@ export default function PesertaProlanisComponent() {
       no_bpjs: item.no_bpjs,
       nama: item.nama,
       jenis_kelamin: item.jenis_kelamin,
-      usia: item.usia,
+      tanggal_lahir: item.tanggal_lahir,
       alamat: item.alamat,
       no_hp: item.no_hp,
       diagnosa: item.diagnosa,
@@ -202,7 +217,7 @@ export default function PesertaProlanisComponent() {
         no_bpjs: "",
         nama: "",
         jenis_kelamin: "",
-        usia: "",
+        tanggal_lahir: "",
         alamat: "",
         no_hp: "",
         diagnosa: "",
@@ -230,7 +245,7 @@ export default function PesertaProlanisComponent() {
       no_bpjs: "",
       nama: "",
       jenis_kelamin: "",
-      usia: "",
+      tanggal_lahir: "",
       alamat: "",
       no_hp: "",
       diagnosa: "",
@@ -363,7 +378,7 @@ export default function PesertaProlanisComponent() {
                   <th className="px-6 py-3 font-semibold">No BPJS</th>
                   <th className="px-6 py-3 font-semibold">Nama</th>
                   <th className="px-6 py-3 font-semibold">Jenis Kelamin</th>
-                  <th className="px-6 py-3 font-semibold">Usia</th>
+                  <th className="px-6 py-3 font-semibold">Tanggal Lahir</th>
                   <th className="px-6 py-3 font-semibold">Alamat</th>
                   <th className="px-6 py-3 font-semibold">No HP</th>
                   <th className="px-6 py-3 font-semibold">Diagnosa</th>
@@ -390,7 +405,7 @@ export default function PesertaProlanisComponent() {
                       <td className="px-6 py-4">{item.no_bpjs}</td>
                       <td className="px-6 py-4">{item.nama}</td>
                       <td className="px-6 py-4">{item.jenis_kelamin}</td>
-                      <td className="px-6 py-4">{item.usia}</td>
+                      <td className="px-6 py-4">{item.tanggal_lahir}</td>
                       <td className="px-6 py-4">{item.alamat}</td>
                       <td className="px-6 py-4">{item.no_hp}</td>
                       <td className="px-6 py-4">
@@ -528,18 +543,23 @@ export default function PesertaProlanisComponent() {
               </div>
 
               <div>
-                <Label>Usia</Label>
-                <Input
-                  name="usia"
-                  type="text"
-                  value={formData.usia}
-                  onChange={handleInputChange}
-                  className={`mt-2 ${errors.usia ? "border-red-500" : ""}`}
-                  placeholder="Usia Peserta"
+                <DatePicker
+                  id="tanggal_lahir"
+                  name="tanggal_lahir" // Penting untuk disamakan dengan field di Laravel
+                  label="Tanggal Lahir"
+                  placeholder="Pilih tanggal lahir"
+                  value={formData.tanggal_lahir}
+                  onChange={(date) =>
+                    setFormData({
+                      ...formData,
+                      tanggal_lahir: date,
+                    })
+                  }
                 />
-                {errors.usia && (
-                  <span className="text-xs text-red-500 mt-1">
-                    {errors.usia[0]}
+
+                {errors.tanggal_lahir && (
+                  <span className="mt-1 text-xs text-red-500">
+                    {errors.tanggal_lahir[0]}
                   </span>
                 )}
               </div>

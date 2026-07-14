@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('gula_darah_puasa');
             $table->string('status_gula_darah');
             $table->string('aktivitas');
+            $table->string('catatan_dokter')->default(null);
             $table->timestamps();
 
             // Relasi ke tabel users

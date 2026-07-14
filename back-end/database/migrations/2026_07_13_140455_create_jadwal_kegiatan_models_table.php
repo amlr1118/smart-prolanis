@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('petugasid');
             $table->string('nama_kegiatan');
             $table->string('jenis_kegiatan');
+            $table->date('tanggal');
             $table->string('lokasi');
             $table->boolean('status')->default(false);
             $table->timestamps();

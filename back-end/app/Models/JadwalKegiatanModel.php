@@ -13,6 +13,7 @@ class JadwalKegiatanModel extends Model
         'petugasid',
         'nama_kegiatan',
         'jenis_kegiatan',
+        'tanggal',
         'lokasi',
     ];
 

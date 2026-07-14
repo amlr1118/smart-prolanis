@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('detail_rekomendasi_diet_models', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('rekomendasiid');
-            $table->unsignedBigInteger('paganid');
+            $table->unsignedBigInteger('panganid');
             $table->string('waktu_makan');
             $table->float('jumlah_porsi');
             $table->timestamps();
@@ -26,7 +26,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             
-             $table->foreign('paganid')
+             $table->foreign('panganid')
                 ->references('id')
                 ->on('data_pangan_lokal_models')
                 ->onUpdate('cascade')

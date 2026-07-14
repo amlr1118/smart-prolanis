@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('no_bpjs');
             $table->string('nama');
             $table->string('jenis_kelamin');
-            $table->string('usia');
+            $table->date('tanggal_lahir');
             $table->string('alamat');
             $table->string('no_hp');
             $table->string('diagnosa');

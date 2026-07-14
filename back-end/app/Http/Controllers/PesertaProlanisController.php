@@ -34,7 +34,7 @@ class PesertaProlanisController extends Controller
             'no_bpjs'  => 'required|numeric|digits:13|unique:peserta_prolanis_models,no_bpjs',
             'nama'     => 'required|string|max:255',
             'jenis_kelamin'=>'required',
-            'usia' => 'required',
+            'tanggal_lahir' => 'required',
             'alamat'   => 'required|string',
             'no_hp'    => 'required|numeric|digits:12', // Pastikan format tabel database mendukung string/varchar untuk nomor HP agar angka 0 di depan tidak hilang
             'diagnosa' => 'required|string'
@@ -45,7 +45,7 @@ class PesertaProlanisController extends Controller
             'no_bpjs.unique' => 'Nomor BPJS ini sudah terdaftar.',
             'nama.required' => 'Nama tidak boleh kososng.',
             'jenis_kelamin.required' => 'Jenis kelamin tidak boleh kososng.',
-            'usia.required' => 'Usia tidak boleh kososng.',
+            'tanggal_lahir.required' => 'Tanggal lahir tidak boleh kososng.',
             'alamat.required' => 'Alamat tidak boleh kosong',
             'no_hp.required' => 'Nomor Hp tidak boleh kosong',
             'no_hp.digits'   => 'Nomor HP harus tepat 12 digit.',
@@ -79,7 +79,7 @@ class PesertaProlanisController extends Controller
             'no_bpjs'  => 'required|numeric|digits:13|unique:peserta_prolanis_models,no_bpjs,' . $id,
             'nama'     => 'required|string|max:255',
             'jenis_kelamin'=>'required',
-            'usia' => 'required',
+            'tanggal_lahir' => 'required',
             'alamat'   => 'required|string',
             'no_hp'    => 'required|numeric|digits:12',
             'diagnosa' => 'required|string'
@@ -89,7 +89,7 @@ class PesertaProlanisController extends Controller
             'no_bpjs.unique' => 'Nomor BPJS ini sudah terdaftar.',
             'nama.required' => 'Nama tidak boleh kososng.',
             'jenis_kelamin.required' => 'Jenis kelamin tidak boleh kososng.',
-            'usia.required' => 'Usia tidak boleh kososng.',
+            'tanggal_lahir.required' => 'Tanggal lahir tidak boleh kososng.',
             'alamat.required' => 'Alamat tidak boleh kosong',
             'no_hp.required' => 'Nomor Hp tidak boleh kosong',
             'no_hp.digits'   => 'Nomor HP harus tepat 12 digit.',

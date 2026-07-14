@@ -13,7 +13,7 @@ class PesertaProlanisModel extends Model
         'no_bpjs',
         'nama',
         'jenis_kelamin',
-        'usia',
+        'tanggal_lahir',
         'alamat',
         'no_hp',
         'diagnosa',
