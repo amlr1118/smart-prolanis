@@ -32,7 +32,7 @@ class PesertaProlanisModelFactory extends Factory
                 'Perempuan'
             ]),
 
-            'usia' => $this->faker->numberBetween(45, 75),
+            'tanggal_lahir' => $this->faker->date(),
 
             'alamat' => $this->faker->address(),
 

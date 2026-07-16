@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Data Pengguna", path: "/data-pengguna", pro: false },
       { name: "Peserta Prolanis", path: "/peserta-prolanis", pro: false },
+      { name: "Jadwal Kegiatan", path: "/jadwal-kegiatan", pro: false },
     ],
   },
 ];

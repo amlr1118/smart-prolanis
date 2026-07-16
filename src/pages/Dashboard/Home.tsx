@@ -3,6 +3,8 @@ import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
 import RecentOrders from "../../components/ecommerce/RecentOrders";
+import AbsemPesrtaProlanis from "../../components/dashboard/AbsenPesertaProlanis";
+
 import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PageMeta from "../../components/common/PageMeta";
 
@@ -22,8 +24,12 @@ export default function Home() {
           <MonthlyTarget />
         </div> */}
 
-        <div className="col-span-12">
+        {/* <div className="col-span-12">
           <RecentOrders />
+        </div> */}
+
+         <div className="col-span-12">
+          <AbsemPesrtaProlanis />
         </div>
 
         {/* <div className="col-span-12 xl:col-span-5">

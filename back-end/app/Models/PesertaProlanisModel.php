@@ -26,6 +26,6 @@ class PesertaProlanisModel extends Model
 
     public function relasikeAbsen()
     {
-        return $this->hasMany(AbsenModel::class, 'pesertaid');
+        return $this->hasMany(AbsenModel::class, 'pesertaid','id');
     }
 }

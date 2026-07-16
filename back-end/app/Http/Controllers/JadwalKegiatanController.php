@@ -23,7 +23,7 @@ class JadwalKegiatanController extends Controller
         ]);
 
         if ($search) {
-            $query->where('nama', 'like', '%' . $search . '%')
+            $query->where('nama_kegiatan', 'like', '%' . $search . '%')
                 ->orWhere('jenis_kegiatan', 'like', '%' . $search . '%');
         }
 
@@ -39,14 +39,16 @@ class JadwalKegiatanController extends Controller
         $validator = Validator::make($request->all(), [
             'nama_kegiatan' => 'required|string|max:255',
             'jenis_kegiatan' => 'required|string',
+            'tanggal' => 'required',
             'lokasi' => 'required|string',
-            'status' => 'required',
+            // 'status' => 'required',
         ], [
             // Kustomisasi pesan error (opsional, agar bahasa Indonesia)
             'nama_kegiatan.required' => 'Nama kegiatan tidak boleh kososng.',
             'jenis_kegiatan.required' => 'Jenis kegiatan tidak boleh kososng.',
+            'tanggal.required' => 'Jenis kegiatan tidak boleh kososng.',
             'lokasi.required' => 'Lokasi tidak boleh kososng.',
-            'status.required' => 'Status kegiatan tidak boleh kososng.',
+            //'status.required' => 'Status kegiatan tidak boleh kososng.',
         ]);
 
         if ($validator->fails()) {
@@ -60,12 +62,13 @@ class JadwalKegiatanController extends Controller
             'petugasid' => $idUser,
             'nama_kegiatan' => $request->nama_kegiatan,
             'jenis_kegiatan' => $request->jenis_kegiatan,
+            'tanggal' => $request->tanggal,
             'lokasi' => $request->lokasi,
-            'status' => $request->status,
+            //'status' => $request->status,
         ]);
 
 
-       $this->pesertaAbsen();
+        // $this->pesertaAbsen();
 
         return response()->json([
             'message' => 'Data jadwal kegiatan berhasil disimpan!',
@@ -100,14 +103,16 @@ class JadwalKegiatanController extends Controller
         $validator = Validator::make($request->all(), [
             'nama_kegiatan' => 'required|string|max:255',
             'jenis_kegiatan' => 'required|string',
+            'tanggal' => 'required',
             'lokasi' => 'required|string',
-            'status' => 'required',
+            //'status' => 'required',
         ], [
             // Kustomisasi pesan error (opsional, agar bahasa Indonesia)
             'nama_kegiatan.required' => 'Nama kegiatan tidak boleh kososng.',
             'jenis_kegiatan.required' => 'Jenis kegiatan tidak boleh kososng.',
+            'tanggal.required' => 'Jenis kegiatan tidak boleh kososng.',
             'lokasi.required' => 'Lokasi tidak boleh kososng.',
-            'status.required' => 'Status kegiatan tidak boleh kososng.',
+            //'status.required' => 'Status kegiatan tidak boleh kososng.',
         ]);
 
         if ($validator->fails()) {
@@ -118,8 +123,8 @@ class JadwalKegiatanController extends Controller
         $data->update([
             'nama_kegiatan' => $request->nama_kegiatan,
             'jenis_kegiatan' => $request->jenis_kegiatan,
+            'tanggal' => $request->tanggal,
             'lokasi' => $request->lokasi,
-            'status' => $request->status,
         ]);
 
         return response()->json([
@@ -145,7 +150,31 @@ class JadwalKegiatanController extends Controller
         ], 200);
     }
 
+    public function tampilDataKegiatanAktif()
+    {
+        $data = JadwalKegiatanModel::with('relasiKegiatanKeUser')
+            ->where('is_active', true)
+            ->get();
 
-    
+       return JadwalKegiatanResource::collection($data);
+    }
+
+    public function updateStatusKegiatan(Request $request, $id)
+    {
+        $data = JadwalKegiatanModel::find($id);
+
+
+        // 2. Simpan Data
+        $data->update([
+            'status' => $request->status,
+            'is_active' => $request->is_active,
+        ]);
+
+        return response()->json([
+            'message' => 'Data jadwal kegiatan berhasil diupdate!',
+            'data' => $data,
+
+        ], 201);
+    }
 
 }

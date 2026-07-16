@@ -15,14 +15,18 @@ class JadwalKegiatanModel extends Model
         'jenis_kegiatan',
         'tanggal',
         'lokasi',
+        'status',
+        'is_active',
     ];
 
 
-    public function relasiKegiatanKeUser(){
-        return $this->belongsTo(User::class,'petugasid','id');
+    public function relasiKegiatanKeUser()
+    {
+        return $this->belongsTo(User::class, 'petugasid', 'id');
     }
 
-    public function relasikeAbsen(){
+    public function relasikeAbsen()
+    {
         return $this->hasMany(AbsenModel::class, 'kegiatanid');
     }
 }

@@ -12,6 +12,8 @@ class AbsenModel extends Model
     protected $fillable = [
         'kegiatanid',
         'pesertaid',
+        'status_kehadiran',
+        'stasiun',
 
     ];
 

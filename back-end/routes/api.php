@@ -48,14 +48,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/hapus-peserta-prolanis/{id}', [PesertaProlanisController::class, 'hapusDataPeserta']);
 
     Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index']);
-    Route::get('/simpan-jadwal-kegiatan', [JadwalKegiatanController::class, 'store']);
-    Route::get('/update-jadwal-kegiatan', [JadwalKegiatanController::class, 'update']);
-    Route::get('/hapus-jadwal-kegiatan', [JadwalKegiatanController::class, 'destroy']);
-
+    Route::post('/simpan-jadwal-kegiatan', [JadwalKegiatanController::class, 'store']);
+    Route::put('/update-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'update']);
+    Route::delete('/hapus-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy']);
+    Route::put('/update-status-kegiatan/{id}', [JadwalKegiatanController::class, 'updateStatusKegiatan']);
+    Route::get('/jadwal-kegiatan-aktif', [JadwalKegiatanController::class, 'tampilDataKegiatanAktif']);
+    // Rute untuk menyimpan atau memperbarui status absensi (Upsert)
+    Route::post('/upsert-absensi', [AbsenController::class, 'upsertAbsensi']);
+    Route::get('/get-peserta-absensi/{kegiatanId}', [AbsenController::class, 'getPesertaAbsensi']);
     Route::get('/absen', [AbsenController::class, 'index']);
-    
-    
+
+
 });
+
 
 
 
