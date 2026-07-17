@@ -104,7 +104,7 @@ class AbsenController extends Controller
             ],
             [
                 'status_kehadiran' => $request->status_kehadiran,
-                'stasiun' => 'Stasiun 1 - ' . $stasiunRole, 
+                'stasiun' => $stasiunRole, 
             ]
         );
 

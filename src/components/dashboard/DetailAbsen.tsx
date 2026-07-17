@@ -15,6 +15,7 @@ interface JadwalInfo {
   nama_kegiatan: string;
   tanggal: string;
   lokasi: string;
+  status: string; //
 }
 
 interface Peserta {
@@ -57,34 +58,55 @@ export default function DetailAbsen() {
   };
 
   // Fungsi untuk mengakhiri kegiatan
+  // Fungsi untuk mengakhiri kegiatan dengan pengamanan ganda
   const handleSelesaiKegiatan = () => {
     Swal.fire({
-      title: "Akhiri Kegiatan?",
-      text: "Apakah Anda yakin ingin menutup kegiatan ini? Setelah ditutup, status akan menjadi 'Selesai'.",
+      title: "Peringatan Kritis!",
+      html: `
+        <div class="text-left text-sm">
+          <p>Apakah Anda yakin ingin menutup kegiatan ini?</p>
+          <br/>
+          <p class="text-red-600 font-semibold">⚠️ Masih ada ${jumlahAlpa} peserta yang belum hadir/diabsen.</p>
+          <p>Jika ditutup sekarang, sistem akan otomatis mencatat mereka sebagai <b>Alpa</b> dan absen tidak bisa diubah lagi.</p>
+          <br/>
+          <p>Ketik kata <strong>TUTUP</strong> di bawah ini untuk mengonfirmasi:</p>
+        </div>
+      `,
       icon: "warning",
+      input: "text",
+      inputPlaceholder: "Ketik TUTUP di sini...",
       showCancelButton: true,
-      confirmButtonColor: "#10b981", // Warna hijau
-      cancelButtonColor: "#ef4444", // Warna merah
-      confirmButtonText: "Ya, Tutup Kegiatan",
+      confirmButtonColor: "#ef4444", // Merah
+      cancelButtonColor: "#9ca3af", // Abu-abu
+      confirmButtonText: "Kunci & Selesaikan",
       cancelButtonText: "Batal",
+      // Validasi input sebelum SweetAlert mengizinkan submit
+      preConfirm: (inputValue) => {
+        if (inputValue !== "TUTUP") {
+          Swal.showValidationMessage(
+            "Anda harus mengetik kata TUTUP (huruf besar) dengan benar!",
+          );
+          return false; // Mencegah popup tertutup
+        }
+        return true;
+      },
     }).then(async (result) => {
+      // Jika hasil isConfirmed true (artinya sudah mengetik TUTUP dengan benar)
       if (result.isConfirmed) {
         try {
           const realId = atob(kegiatanId as string);
 
-          // Menggunakan endpoint update-status-kegiatan yang sudah kita buat di awal
           await api.put(`/update-status-kegiatan/${realId}`, {
-            status: "2", // 2 = Selesai
-            is_active: false, // Matikan kegiatan agar jadwal lain bisa dibuka
+            status: "2",
+            is_active: false,
           });
 
           Swal.fire(
-            "Berhasil!",
-            "Kegiatan telah selesai dan ditutup.",
+            "Terkunci!",
+            "Kegiatan telah selesai dan rekap absensi otomatis dikunci.",
             "success",
           );
 
-          // Kembalikan perawat ke halaman daftar jadwal
           navigate("/jadwal-kegiatan");
         } catch (error) {
           console.error("Gagal menutup kegiatan", error);
@@ -137,6 +159,21 @@ export default function DetailAbsen() {
       p.no_bpjs.includes(search),
   );
 
+  // --- LOGIKA HITUNG STATISTIK KEHADIRAN REAL-TIME ---
+  const totalPeserta = peserta.length;
+
+  const jumlahHadir = peserta.filter((p) => {
+    const dataAbsensi = p.relasike_absen || [];
+    return (
+      dataAbsensi.length > 0 &&
+      (dataAbsensi[0].status_kehadiran === true ||
+        Number(dataAbsensi[0].status_kehadiran) === 1)
+    );
+  }).length;
+
+  const jumlahAlpa = totalPeserta - jumlahHadir;
+  const isArsip = jadwal?.status === "2";
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
@@ -145,27 +182,43 @@ export default function DetailAbsen() {
             <h2 className="text-xl font-bold text-gray-800 dark:text-white/90">
               📋 Absensi: {jadwal?.nama_kegiatan || "Memuat..."}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-1 mb-3">
               Tanggal: {jadwal?.tanggal} | Lokasi: {jadwal?.lokasi}
             </p>
+
+            {/* TAMBAHAN KODE: Indikator Jumlah Kehadiran */}
+            <div className="flex flex-wrap gap-2">
+              <span className="inline-flex items-center rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400">
+                Total Peserta: {totalPeserta}
+              </span>
+              <span className="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-400">
+                Hadir: {jumlahHadir}
+              </span>
+              <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-900/30 dark:text-red-400">
+                Belum Hadir / Alpa: {jumlahAlpa}
+              </span>
+            </div>
+            {/* ----------------------------------------- */}
           </div>
 
           {/* Kelompok Tombol Aksi */}
           <div className="flex gap-3">
             <button
-              onClick={() => navigate("/jadwal-kegiatan")}
+              onClick={() => navigate("/")}
               className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
             >
               Kembali
             </button>
 
             {/* Tombol Baru untuk Selesaikan Kegiatan */}
-            <button
-              onClick={handleSelesaiKegiatan}
-              className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Selesaikan Kegiatan
-            </button>
+            {!isArsip && (
+              <button
+                onClick={handleSelesaiKegiatan}
+                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600"
+              >
+                Selesaikan Kegiatan
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -241,10 +294,15 @@ export default function DetailAbsen() {
                       <TableCell className="text-center">
                         <button
                           onClick={() => handleToggleKehadiran(p.id, isHadir)}
+                          disabled={isArsip} // KUNCI TOMBOL JIKA ARSIP
                           className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-200 ${
-                            isHadir
-                              ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-2 border-emerald-500"
-                              : "bg-gray-100 text-gray-500 hover:bg-gray-200 border-2 border-transparent"
+                            isArsip
+                              ? isHadir
+                                ? "bg-emerald-50 text-emerald-600 border-2 border-emerald-200 cursor-not-allowed opacity-80" // Mode Arsip Hadir
+                                : "bg-gray-50 text-gray-400 border-2 border-transparent cursor-not-allowed opacity-80" // Mode Arsip Alpa
+                              : isHadir
+                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-2 border-emerald-500" // Mode Aktif Hadir
+                                : "bg-gray-100 text-gray-500 hover:bg-gray-200 border-2 border-transparent" // Mode Aktif Alpa
                           }`}
                         >
                           {isHadir ? "✓ HADIR" : "✗ ALPA"}

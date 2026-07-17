@@ -41,7 +41,7 @@ export default function PenggunaComponent() {
     { value: "3", label: "Gizi" },
     { value: "4", label: "Apoteker" },
     { value: "5", label: "Administrasi" },
-
+    { value: "6", label: "PIC Prolanis" },
   ];
 
   // --- STATE BARU UNTUK FORM & VALIDASI ---
@@ -355,7 +355,13 @@ export default function PenggunaComponent() {
                             ? "Perawat"
                             : item.role === "3"
                               ? "Gizi"
-                              : "Tidak diketahui"}
+                              : item.role === "4"
+                                ? "Apoteker"
+                                : item.role === "5"
+                                  ? "Administrasi"
+                                  : item.role === "6"
+                                    ? "PIC Prolanis"
+                                    : "Tidak diketahui"}
                       </td>
                       <td className="px-6 py-4">{item.email}</td>
                       <td className="px-6 py-4 text-center">
@@ -488,9 +494,19 @@ export default function PenggunaComponent() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`mt-2 ${errors.email ? "border-red-500" : ""}`}
+                  disabled={editId !== null}
+                  className={`mt-2 ${
+                    errors.email ? "border-red-500" : ""
+                  } ${editId !== null ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="Email Pengguna"
                 />
+
+                {editId !== null && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Email tidak dapat diubah.
+                  </p>
+                )}
+
                 {errors.email && (
                   <span className="text-xs text-red-500 mt-1">
                     {errors.email[0]}

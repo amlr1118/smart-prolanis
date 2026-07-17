@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbsenController;
+use App\Http\Controllers\ArsipKegiatanController;
 use App\Http\Controllers\JadwalKegiatanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PesertaProlanisController;
@@ -51,12 +52,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/simpan-jadwal-kegiatan', [JadwalKegiatanController::class, 'store']);
     Route::put('/update-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'update']);
     Route::delete('/hapus-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy']);
+    
     Route::put('/update-status-kegiatan/{id}', [JadwalKegiatanController::class, 'updateStatusKegiatan']);
     Route::get('/jadwal-kegiatan-aktif', [JadwalKegiatanController::class, 'tampilDataKegiatanAktif']);
-    // Rute untuk menyimpan atau memperbarui status absensi (Upsert)
+   
     Route::post('/upsert-absensi', [AbsenController::class, 'upsertAbsensi']);
     Route::get('/get-peserta-absensi/{kegiatanId}', [AbsenController::class, 'getPesertaAbsensi']);
     Route::get('/absen', [AbsenController::class, 'index']);
+
+    //widget route
+    Route::get('/statistik-jadwal', [JadwalKegiatanController::class, 'widgetDashboardKader']);
+
+    
+    //Hanya bisa di akses PIC Prolanis
+    Route::get('/arsip-kegiatan', [ArsipKegiatanController::class, 'index']);
 
 
 });

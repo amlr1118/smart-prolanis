@@ -7,6 +7,7 @@ import {
   GridIcon,
   HorizontaLDots,
   TableIcon,
+  ListIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -32,6 +33,12 @@ const navItems: NavItem[] = [
       { name: "Peserta Prolanis", path: "/peserta-prolanis", pro: false },
       { name: "Jadwal Kegiatan", path: "/jadwal-kegiatan", pro: false },
     ],
+  },
+
+  {
+    icon: <ListIcon />,
+    name: "Arsip",
+    subItems: [{ name: "Arsip Kegiatan", path: "/arsip-kegiatan", pro: false }],
   },
 ];
 

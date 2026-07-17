@@ -40,7 +40,7 @@ class LoginController extends Controller
 
         $validator = Validator::make($request->all(), [
             'userid' => 'required',
-            'email' => 'required|email|unique:users,email',
+           /// 'email' => 'required|email|unique:users,email',
             'name' => 'required|string|max:255',
             'role' => 'required',
 
@@ -52,7 +52,7 @@ class LoginController extends Controller
 
         ], [
             'userid.required' => 'Nomor identitas tidak boleh kosong',
-            'email.required' => 'Email tidak boleh kosong.',
+           // 'email.required' => 'Email tidak boleh kosong.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email ini sudah terdaftar.',
 
@@ -76,7 +76,7 @@ class LoginController extends Controller
         $pengguna->update([
             'userid' => $request->userid,
             'name' => $request->name,
-            'email' => $request->email,
+          //  'email' => $request->email,
             'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);

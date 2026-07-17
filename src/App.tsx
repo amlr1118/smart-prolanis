@@ -5,6 +5,7 @@ import PesertaProlanisPages from "./pages/MasterData/PesertaProlanisPages";
 import PenggunaComponent from "./components/master-data/PenggunaComponent";
 import JadwalKegiatanComponent from "./components/master-data/JadwalKegiatanComponent";
 import DetailAbsen from "./components/dashboard/DetailAbsen";
+import ArsipKegiatan from "./components/arsip/ArsipKegiatanComponent";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
@@ -61,6 +62,15 @@ export default function App() {
               element={
                 <PrivateRoute>
                   <DetailAbsen />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/arsip-kegiatan"
+              element={
+                <PrivateRoute>
+                  <ArsipKegiatan />
                 </PrivateRoute>
               }
             />

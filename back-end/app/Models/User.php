@@ -25,6 +25,13 @@ class User extends Authenticatable
         'password',
     ];
 
+    const ROLE_DOKTER = 1;
+    const ROLE_PERAWAT = 2;
+    const ROLE_GIZI = 3;
+    const ROLE_APOTEKER = 4;
+    const ROLE_ADMINISTRASI = 5;
+    const ROLE_PIC = 6;
+
     // Sebagai dokter
     public function pemeriksaanSebagaiDokter()
     {
