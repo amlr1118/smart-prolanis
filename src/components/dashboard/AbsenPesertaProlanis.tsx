@@ -44,14 +44,14 @@ export default function AbsenPesertaProlanis() {
 
   const handleAction = (item: JadwalKegiatan) => {
     // Navigasi jika sudah aktif
-    if (item.is_active || item.status === "1") {
+    if (item.status === "1") {
       // 1. Ubah angka ID menjadi string
       const stringId = item.id.toString();
       
       // 2. Enkripsi (Samarkan) dengan Base64 menggunakan fungsi bawaan btoa()
       const encryptedId = btoa(stringId); 
       
-      console.log("Navigasi ke halaman absen untuk Encrypted ID:", encryptedId);
+      //console.log("Navigasi ke halaman absen untuk Encrypted ID:", encryptedId);
       
       // 3. Gunakan ID yang sudah dienkripsi di URL
       navigate(`/absen/${encryptedId}`);
@@ -152,7 +152,7 @@ export default function AbsenPesertaProlanis() {
                             : "bg-blue-600 hover:bg-blue-700"
                         }`}
                       >
-                        {item.is_active || item.status === "1" ? "Absen Peserta" : "Mulai Kegiatan"}
+                        {item.status === "1" ? "Absen Peserta" : "Mulai Kegiatan"}
                       </button>
                     )}
                   </TableCell>

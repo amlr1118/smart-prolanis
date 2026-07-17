@@ -17,11 +17,17 @@ class AbsenModel extends Model
 
     ];
 
-    public function relasikeKegiatan(){
-        return $this->belongsTo(JadwalKegiatanModel::class, 'kegiatanid','id');
+    protected $casts = [
+        'status_kehadiran' => 'boolean',
+    ];
+
+    public function relasikeKegiatan()
+    {
+        return $this->belongsTo(JadwalKegiatanModel::class, 'kegiatanid', 'id');
     }
 
-    public function relasikePeserta(){
+    public function relasikePeserta()
+    {
         return $this->belongsTo(PesertaProlanisModel::class, 'pesertaid', 'id');
     }
 }

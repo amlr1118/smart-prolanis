@@ -6,6 +6,7 @@ use App\Http\Resources\JadwalKegiatanResource;
 use App\Models\AbsenModel;
 use App\Models\JadwalKegiatanModel;
 use App\Models\PesertaProlanisModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -91,7 +92,6 @@ class JadwalKegiatanController extends Controller
                 'stasiun' => $stasiun,
             ]);
         }
-
     }
 
 
@@ -152,11 +152,24 @@ class JadwalKegiatanController extends Controller
 
     public function tampilDataKegiatanAktif()
     {
+        $hariIni = Carbon::today()->toDateString();
+
+        // 2. (Opsional tapi penting) Matikan semua kegiatan yang jadwalnya BUKAN hari ini.
+        // Ini mencegah penumpukan data aktif dari kegiatan hari-hari sebelumnya.
+        JadwalKegiatanModel::whereDate('tanggal', '!=', $hariIni)
+            ->update(['is_active' => false]);
+
+        // 3. Update is_active menjadi true untuk kegiatan yang jadwalnya HARI INI.
+        JadwalKegiatanModel::whereDate('tanggal', $hariIni)
+            ->update(['is_active' => true]);
+
+        // 4. Ambil data kegiatan yang sekarang berstatus aktif
         $data = JadwalKegiatanModel::with('relasiKegiatanKeUser')
             ->where('is_active', true)
             ->get();
 
-       return JadwalKegiatanResource::collection($data);
+        // 5. Kembalikan data melalui Resource Collection
+        return JadwalKegiatanResource::collection($data);
     }
 
     public function updateStatusKegiatan(Request $request, $id)
@@ -176,5 +189,4 @@ class JadwalKegiatanController extends Controller
 
         ], 201);
     }
-
 }

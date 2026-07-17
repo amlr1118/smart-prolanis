@@ -17,6 +17,7 @@ interface PesertaProlanis {
   tanggal: string;
   lokasi: string;
   status: string;
+  is_active: boolean;
 }
 
 // Tambahkan interface untuk metadata pagination Laravel
@@ -199,7 +200,7 @@ export default function JadwalKegiatanComponent() {
     // 1. Tampilkan dialog konfirmasi SweetAlert
     const result = await Swal.fire({
       title: "Apakah Anda yakin?",
-      text: "Data peserta ini akan dihapus secara permanen!",
+      text: "Data jadwal kegiatan ini akan dihapus secara permanen!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33", // Warna merah untuk tombol hapus
@@ -216,7 +217,8 @@ export default function JadwalKegiatanComponent() {
         // Tampilkan pop-up sukses
         Swal.fire({
           title: "Terhapus!",
-          text: response.data.message || "Data peserta berhasil dihapus.",
+          text:
+            response.data.message || "Data jadwal kegiatan berhasil dihapus.",
           icon: "success",
           timer: 2000, // Otomatis tertutup setelah 2 detik
           showConfirmButton: false,
@@ -369,7 +371,12 @@ export default function JadwalKegiatanComponent() {
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                          disabled={item.is_active} // Menonaktifkan fungsi klik jika is_active bernilai true
+                          className={`rounded px-3 py-1 text-white transition-colors ${
+                            item.is_active
+                              ? "bg-gray-400 cursor-not-allowed opacity-70" // Gaya visual saat tombol dimatikan
+                              : "bg-red-500 hover:bg-red-600" // Gaya visual saat tombol aktif
+                          }`}
                         >
                           Hapus
                         </button>
@@ -427,7 +434,9 @@ export default function JadwalKegiatanComponent() {
         <div className="relative w-full p-4 overflow-y-auto bg-white rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="mb-6">
             <h4 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              {editId ? "Edit Data Peserta" : "Form Tambah Jadwal Kegiatan"}
+              {editId
+                ? "Edit Data Jadwal Kegiatan"
+                : "Form Tambah Jadwal Kegiatan"}
             </h4>
           </div>
 
