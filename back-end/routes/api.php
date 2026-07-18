@@ -28,52 +28,44 @@ Route::post('/login', [LoginController::class, 'login']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    //bisa di akses oleh semua role
     Route::get('/user', function (Request $request) {
         return $request->user(); // INI YANG BENAR;
     });
-
-    Route::get('/pengguna', [LoginController::class, 'index']);
-    Route::put('/update-pengguna/{id}', [LoginController::class, 'updateDataPengguna']);
-    Route::delete('/hapus-pengguna/{id}', [LoginController::class, 'hapusDataPengguna']);
-
-
     Route::post('/logout', [LoginController::class, 'logout']);
 
-    Route::post('/register', [LoginController::class, 'register']);
-    Route::put('/users/{id}', [LoginController::class, 'update']);
-    Route::delete('/users/{id}', [LoginController::class, 'destroy']);
-
-    Route::get('/peserta-prolanis', [PesertaProlanisController::class, 'tampilkanSemuaData']);
-    Route::post('/tambah-peserta-prolanis', [PesertaProlanisController::class, 'tambahDataPeserta']);
-    Route::put('/update-peserta-prolanis/{id}', [PesertaProlanisController::class, 'updateDataPeserta']);
-    Route::delete('/hapus-peserta-prolanis/{id}', [PesertaProlanisController::class, 'hapusDataPeserta']);
-
-    Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index']);
-    Route::post('/simpan-jadwal-kegiatan', [JadwalKegiatanController::class, 'store']);
-    Route::put('/update-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'update']);
-    Route::delete('/hapus-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy']);
-    
-    Route::put('/update-status-kegiatan/{id}', [JadwalKegiatanController::class, 'updateStatusKegiatan']);
-    Route::get('/jadwal-kegiatan-aktif', [JadwalKegiatanController::class, 'tampilDataKegiatanAktif']);
-   
-    Route::post('/upsert-absensi', [AbsenController::class, 'upsertAbsensi']);
-    Route::get('/get-peserta-absensi/{kegiatanId}', [AbsenController::class, 'getPesertaAbsensi']);
-    Route::get('/absen', [AbsenController::class, 'index']);
-
-    //widget route
-    Route::get('/statistik-jadwal', [JadwalKegiatanController::class, 'widgetDashboardKader']);
-
-    
-    //Hanya bisa di akses PIC Prolanis
-    Route::get('/arsip-kegiatan', [ArsipKegiatanController::class, 'index']);
+    Route::middleware('role:6')->group(function () {
+        //Hanya bisa di akses PIC Prolanis
+        Route::get('/pengguna', [LoginController::class, 'index']);
+        Route::put('/update-pengguna/{id}', [LoginController::class, 'updateDataPengguna']);
+        Route::delete('/hapus-pengguna/{id}', [LoginController::class, 'hapusDataPengguna']);
+        Route::post('/register', [LoginController::class, 'register']);
+        Route::put('/users/{id}', [LoginController::class, 'update']);
+        Route::delete('/users/{id}', [LoginController::class, 'destroy']);
+    });
 
 
+    Route::middleware('role:5,6')->group(function () {
+        //hanya bisa di akses oleh administrasi dan PIC prolanis
+        Route::get('/peserta-prolanis', [PesertaProlanisController::class, 'tampilkanSemuaData']);
+        Route::post('/tambah-peserta-prolanis', [PesertaProlanisController::class, 'tambahDataPeserta']);
+        Route::put('/update-peserta-prolanis/{id}', [PesertaProlanisController::class, 'updateDataPeserta']);
+        Route::delete('/hapus-peserta-prolanis/{id}', [PesertaProlanisController::class, 'hapusDataPeserta']);
+        Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index']);
+        Route::post('/simpan-jadwal-kegiatan', [JadwalKegiatanController::class, 'store']);
+        Route::put('/update-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'update']);
+        Route::delete('/hapus-jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'destroy']);
+        Route::put('/update-status-kegiatan/{id}', [JadwalKegiatanController::class, 'updateStatusKegiatan']);
+        Route::get('/jadwal-kegiatan-aktif', [JadwalKegiatanController::class, 'tampilDataKegiatanAktif']);
+        Route::post('/upsert-absensi', [AbsenController::class, 'upsertAbsensi']);
+        Route::get('/get-peserta-absensi/{kegiatanId}', [AbsenController::class, 'getPesertaAbsensi']);
+        Route::get('/absen', [AbsenController::class, 'index']);
+        Route::get('/arsip-kegiatan', [ArsipKegiatanController::class, 'index']);
+    });
+
+    Route::middleware('role:5')->group(function () {
+        //hanya bisa di akses oleh administrasi
+        Route::get('/statistik-jadwal', [JadwalKegiatanController::class, 'widgetDashboardKader']);
+    });
 });
-
-
-
-
-
-
-
-

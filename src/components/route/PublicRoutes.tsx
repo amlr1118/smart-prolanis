@@ -1,13 +1,14 @@
-import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-interface PublicRouteProps {
-  children: ReactNode;
-}
+export default function PublicRoute({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { token } = useAuth();
 
-export default function PublicRoute({ children }: PublicRouteProps) {
-  const token = localStorage.getItem("token");
-
+  // Jika sudah ada token (sedang login), jangan izinkan ke halaman login lagi
   if (token) {
     return <Navigate to="/" replace />;
   }

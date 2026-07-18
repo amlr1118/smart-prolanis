@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Pastikan import dari react-router-dom
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/OtherPage/NotFound";
 import PesertaProlanisPages from "./pages/MasterData/PesertaProlanisPages";
@@ -20,8 +20,8 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           {/* Dashboard Layout */}
-
           <Route element={<AppLayout />}>
+            {/* Rute Global (Semua yang login bisa akses) */}
             <Route
               index
               path="/"
@@ -31,18 +31,21 @@ export default function App() {
                 </PrivateRoute>
               }
             />
+
+            {/* RUTE TERBATAS: Hanya Administrasi (5) dan PIC (6) yang bisa Kelola Pengguna */}
             <Route
               path="/data-pengguna"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={[6]}>
                   <PenggunaComponent />
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/peserta-prolanis"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={[5, 6]}>
                   <PesertaProlanisPages />
                 </PrivateRoute>
               }
@@ -51,7 +54,7 @@ export default function App() {
             <Route
               path="/jadwal-kegiatan"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={[5, 6]}>
                   <JadwalKegiatanComponent />
                 </PrivateRoute>
               }
@@ -60,7 +63,7 @@ export default function App() {
             <Route
               path="/absen/:kegiatanId"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={[5, 6]}>
                   <DetailAbsen />
                 </PrivateRoute>
               }
@@ -69,14 +72,14 @@ export default function App() {
             <Route
               path="/arsip-kegiatan"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={[5, 6]}>
                   <ArsipKegiatan />
                 </PrivateRoute>
               }
             />
           </Route>
 
-          {/* Login */}
+          {/* Login Route (Public) */}
           <Route
             path="/login"
             element={
@@ -85,6 +88,7 @@ export default function App() {
               </PublicRoute>
             }
           />
+
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>

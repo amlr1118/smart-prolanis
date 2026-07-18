@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { Link } from "react-router";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import axios from "axios";
+import api from "../../services/api"; // Gunakan instance API yang sudah kita buat
+import { useAuth } from "../../context/AuthContext"; // Panggil Context
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+
+  // 1. Ambil data user dan fungsi logout langsung dari Context!
+  const { user, logout } = useAuth();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -18,90 +21,39 @@ export default function UserDropdown() {
     setIsOpen(false);
   }
 
-  // 1. State baru untuk menyimpan data user
-  const [user, setUser] = useState({
-    name: "Loading...",
-    email: "",
-    avatar: "/images/user/no-user.jpg", // Default avatar
-  });
-
-  // 2. Mengambil data user yang sedang login saat komponen pertama kali dirender
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("token");
-
-      if (token) {
-        try {
-          const response = await axios.get("http://127.0.0.1:8000/api/user", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          // Cek bentuk data yang dikembalikan backend di Console Browser
-          //console.log("Data user dari API:", response.data);
-
-          // Update state dengan data dari database
-          setUser({
-            name: response.data.name,
-            email: response.data.email,
-            // Jika Anda punya kolom 'avatar' di DB, gunakan itu. Jika tidak, pakai default.
-            avatar: response.data.avatar || "/images/user/no-user.jpg",
-          });
-        } catch (error) {
-          console.error("Gagal mengambil data user:", error);
-          // Opsional: Jika token tidak valid/expired, otomatis arahkan ke login
-          // localStorage.removeItem("token");
-          // navigate("/login");
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [navigate]);
-
   const handleLogout = () => {
     Swal.fire({
       title: "Apakah Anda yakin ingin logout?",
       text: "Sesi Anda akan diakhiri.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#ef4444", // Ubah jadi merah agar sesuai konteks "keluar"
+      cancelButtonColor: "#9ca3af",
       confirmButtonText: "Ya, Logout",
       cancelButtonText: "Batal",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const token = localStorage.getItem("token");
-
-        axios
-          .post(
-            "http://127.0.0.1:8000/api/logout",
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          )
-          .then(() => {
-            localStorage.removeItem("token");
-            navigate("/login");
-          })
-          .catch((error) => {
-            console.error("Logout error:", error);
-            Swal.fire(
-              "Gagal Logout",
-              "Terjadi kesalahan saat logout.",
-              "error",
-            );
-          });
+        try {
+          // 2. Beritahu server untuk menghapus token
+          await api.post("/logout");
+        } catch (error) {
+          // Jika gagal (misal karena token sudah mati duluan), abaikan saja pesannya
+          console.error(
+            "API Logout error (Token mungkin sudah tidak valid):",
+            error,
+          );
+        } finally {
+          // 3. FINALLY: Blok ini PASTI dijalankan, baik try sukses maupun catch error!
+          logout(); // Memanggil fungsi bersihkan token & state dari AuthContext
+          navigate("/login");
+        }
       }
     });
   };
 
-  // Jika user.name undefined/null, gunakan string "User" sebagai default
-  const firstName = (user?.name || "User").split(" ")[0];
+  // Ambil nama depan (Pastikan fallback aman jika user null)
+  const firstName = user?.name?.split(" ")[0] || "User";
+  const userAvatar = (user as any)?.avatar || "/images/user/no-user.jpg";
 
   return (
     <div className="relative">
@@ -110,7 +62,7 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src={user.avatar} alt="User Avatar" />
+          <img src={userAvatar} alt="User Avatar" />
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
@@ -143,39 +95,14 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {user.name}
+            {user?.name || "Loading..."}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {user.email}
+            {user?.email || "..."}
           </span>
         </div>
 
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-          <li>
-            {/* <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="#"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              <svg
-                className="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z"
-                  fill=""
-                />
-              </svg>
-              Edit profile
-            </DropdownItem> */}
-          </li>
           <li>
             <DropdownItem
               onItemClick={closeDropdown}
@@ -200,31 +127,6 @@ export default function UserDropdown() {
               </svg>
               Pengaturan Akun
             </DropdownItem>
-          </li>
-          <li>
-            {/* <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/profile"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              <svg
-                className="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12ZM12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11.0991 7.52507C11.0991 8.02213 11.5021 8.42507 11.9991 8.42507H12.0001C12.4972 8.42507 12.9001 8.02213 12.9001 7.52507C12.9001 7.02802 12.4972 6.62507 12.0001 6.62507H11.9991C11.5021 6.62507 11.0991 7.02802 11.0991 7.52507ZM12.0001 17.3714C11.5859 17.3714 11.2501 17.0356 11.2501 16.6214V10.9449C11.2501 10.5307 11.5859 10.1949 12.0001 10.1949C12.4143 10.1949 12.7501 10.5307 12.7501 10.9449V16.6214C12.7501 17.0356 12.4143 17.3714 12.0001 17.3714Z"
-                  fill=""
-                />
-              </svg>
-              Support
-            </DropdownItem> */}
           </li>
         </ul>
         <button

@@ -40,7 +40,7 @@ class LoginController extends Controller
 
         $validator = Validator::make($request->all(), [
             'userid' => 'required',
-           /// 'email' => 'required|email|unique:users,email',
+            /// 'email' => 'required|email|unique:users,email',
             'name' => 'required|string|max:255',
             'role' => 'required',
 
@@ -52,7 +52,7 @@ class LoginController extends Controller
 
         ], [
             'userid.required' => 'Nomor identitas tidak boleh kosong',
-           // 'email.required' => 'Email tidak boleh kosong.',
+            // 'email.required' => 'Email tidak boleh kosong.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email ini sudah terdaftar.',
 
@@ -76,7 +76,7 @@ class LoginController extends Controller
         $pengguna->update([
             'userid' => $request->userid,
             'name' => $request->name,
-          //  'email' => $request->email,
+            //  'email' => $request->email,
             'role' => $request->role,
             'password' => Hash::make($request->password),
         ]);
@@ -157,29 +157,32 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $validasi = $request->validate([
+        // 1. Validasi input
+        // Jika gagal, Laravel otomatis mengirimkan status 422 (Unprocessable Entity)
+        // beserta pesan error validasinya ke React.
+        $request->validate([
             'email' => 'required|email|max:255',
             'password' => 'required',
         ]);
 
         $user = User::where('email', $request->email)->first();
 
+        // 2. Cek kecocokan kredensial
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return [
-                'errors' => [
-                    'email' => ['Email dan password tidak cocok !']
-                ]
-            ];
+            // Harus menggunakan status 401 agar memicu blok 'catch' di Frontend
+            return response()->json([
+                'message' => 'Email atau password yang Anda masukkan salah.'
+            ], 401);
         }
 
+        // 3. Buat token baru
         $token = $user->createToken($user->name);
 
-        //Auth::login($user);
-
-        return [
+        // 4. Kembalikan data dengan format JSON standar (Status 200 OK)
+        return response()->json([
             'user' => $user,
             'token' => $token->plainTextToken
-        ];
+        ], 200);
     }
 
     public function logout(Request $request)
