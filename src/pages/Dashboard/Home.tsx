@@ -1,11 +1,7 @@
-import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
-import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
-import RecentOrders from "../../components/ecommerce/RecentOrders";
+
 import AbsemPesrtaProlanis from "../../components/dashboard/AbsenPesertaProlanis";
 import KaderWidget from "../../components/widget/KaderWidget";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
+import PemeriksaanFisikComponent from "../../components/dashboard/PemeriksaaanComponent";
 import PageMeta from "../../components/common/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 
@@ -39,6 +35,13 @@ export default function Home() {
             <AbsemPesrtaProlanis />
           </div>
         )}
+
+        {hasAccess([2]) && (
+          <div className="col-span-12">
+            <PemeriksaanFisikComponent />
+          </div>
+        )}
+
       </div>
     </>
   );

@@ -29,4 +29,9 @@ class JadwalKegiatanModel extends Model
     {
         return $this->hasMany(AbsenModel::class, 'kegiatanid');
     }
+
+    public function RelasiJadwalKePemeriksaan()
+    {
+        return $this->hasMany(JadwalKegiatanModel::class, 'jadwal_kegiatan_id');
+    }
 }

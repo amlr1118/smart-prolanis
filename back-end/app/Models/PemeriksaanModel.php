@@ -9,7 +9,10 @@ class PemeriksaanModel extends Model
 {
     use HasFactory;
 
+    protected $table = 'pemeriksaan_models';
+
     protected $fillable = [
+        'jadwal_kegiatan_id',
         'pesertaid',
         'perawatid',
         'dokterid',
@@ -21,7 +24,13 @@ class PemeriksaanModel extends Model
         'gula_darah_puasa',
         'status_gula_darah',
         'aktivitas',
+        'catatan_dokter'
     ];
+
+    public function jadwal()
+    {
+        return $this->belongsTo(JadwalKegiatanModel::class, 'jadwal_kegiatan_id');
+    }
 
     public function peserta()
     {
@@ -30,15 +39,16 @@ class PemeriksaanModel extends Model
 
     public function perawat()
     {
-        return $this->belongsTo(User::class, 'perawatid','id');
+        return $this->belongsTo(User::class, 'perawatid');
     }
 
     public function dokter()
     {
-        return $this->belongsTo(User::class, 'dokterid','id');
+        return $this->belongsTo(User::class, 'dokterid');
     }
 
-    public function rekomendasiDiet(){
-        return $this->hasMany(RekomendasiDietModel::class, 'pemeriksaanid');
+    public function RelasikeResepObat()
+    {
+        return $this->hasMany(PemeriksaanModel::class, 'pemeriksaan_id');
     }
 }

@@ -19,7 +19,7 @@ class PesertaProlanisModel extends Model
         'diagnosa',
     ];
 
-    public function pemeriksaans()
+    public function RelasiKepemeriksaans()
     {
         return $this->hasMany(PemeriksaanModel::class, 'pesertaid');
     }
