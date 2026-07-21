@@ -2,64 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AbsenModel;
 use App\Models\PemeriksaanModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PemeriksaanController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request) {}
+
+    public function store(Request $request) {}
+
+    public function getPesertaHadir($kegiatanId)
     {
-        $search = $request->query('search');
+        // 1. Ambil data absensi berdasarkan jadwal & HANYA yang hadir
+        // Gunakan eager loading 'with('peserta')' agar tidak berat di database
+        $absensi = AbsenModel::with('relasikePeserta')
+            ->where('kegiatanid', $kegiatanId)
+            ->where('status_kehadiran', 'Hadir') // Sesuaikan dengan value di DB Anda
+            ->get();
 
-        $query = PemeriksaanModel::with([
-            'peserta',
-            'dokter',
-            'perawat'
-        ]);
+        // 2. Format ulang datanya untuk dikirim ke React
+        $dataPeserta = $absensi->map(function ($absen) use ($kegiatanId) {
+            $peserta = $absen->relasikePeserta;
 
-        if ($search) {
+            // Hitung usia otomatis menggunakan Carbon (Berdasarkan tanggal lahir)
+            $usia = 0;
+            if ($peserta->tanggal_lahir) {
+                $usia = Carbon::parse($peserta->tanggal_lahir)->age;
+            }
 
-            $query->whereHas('peserta', function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('no_bpjs', 'like', "%{$search}%");
-            })
-                ->orWhereHas('dokter', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('perawat', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-        }
+            // Cek apakah peserta ini SUDAH diperiksa di jadwal ini?
+            $pemeriksaan = PemeriksaanModel::where('jadwal_kegiatan_id', $kegiatanId)
+                ->where('pesertaid', $peserta->id)
+                ->first();
 
-        $data = $query->latest()->paginate(10);
+            return [
+                'id' => $peserta->id,
+                'no_bpjs' => $peserta->no_bpjs, // Sesuaikan nama kolom BPJS di tabel peserta
+                'nama' => $peserta->nama,
+                'usia' => $usia,
+                'status_diperiksa' => $pemeriksaan ? true : false,
 
-        return response()->json($data);
-    }
-
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-
-
-        ], [
-
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Simpan data dengan password terenkripsi
-        $data = PemeriksaanModel::create([
-
-        ]);
+                // Jika sudah diperiksa, kita kirimkan juga data TTV-nya
+                // agar di React nanti tombol "Edit TTV" bisa memunculkan data lama
+                'data_ttv' => $pemeriksaan
+            ];
+        });
 
         return response()->json([
-            'message' => 'Data Pemeriksaan berhasil disimpan!',
-            'data' => $data
-        ], 201);
+            'message' => 'Berhasil mengambil daftar peserta hadir',
+            'data' => $dataPeserta
+        ], 200);
     }
 }

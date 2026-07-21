@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\ArsipKegiatanController;
 use App\Http\Controllers\JadwalKegiatanController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\PesertaProlanisController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -67,5 +68,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware('role:5')->group(function () {
         //hanya bisa di akses oleh administrasi
         Route::get('/statistik-jadwal', [JadwalKegiatanController::class, 'widgetDashboardKader']);
+    });
+
+    Route::middleware('role:1,2,6')->group(function () {
+
+        // Rute GET untuk menarik data peserta di tabel
+        Route::get('/pemeriksaan-fisik/peserta-hadir/{kegiatanId}', [PemeriksaanController::class, 'getPesertaHadir']);
+
+        // Rute POST untuk menyimpan/update form TTV
+        Route::post('/upsert-pemeriksaan', [PemeriksaanController::class, 'upsertPemeriksaan']);
     });
 });
