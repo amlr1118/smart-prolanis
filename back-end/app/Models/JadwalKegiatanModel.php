@@ -30,8 +30,10 @@ class JadwalKegiatanModel extends Model
         return $this->hasMany(AbsenModel::class, 'kegiatanid');
     }
 
+    // KODE SEBELUMNYA SALAH (JadwalKegiatanModel::class)
     public function RelasiJadwalKePemeriksaan()
     {
-        return $this->hasMany(JadwalKegiatanModel::class, 'jadwal_kegiatan_id');
+        // Ubah menjadi PemeriksaanModel::class
+        return $this->hasMany(PemeriksaanModel::class, 'jadwal_kegiatan_id');
     }
 }

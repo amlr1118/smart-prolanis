@@ -49,6 +49,7 @@ class PemeriksaanModel extends Model
 
     public function RelasikeResepObat()
     {
-        return $this->hasMany(PemeriksaanModel::class, 'pemeriksaan_id');
+        // Ubah menjadi ResepObatModel::class
+        return $this->hasMany(ResepObatModel::class, 'pemeriksaan_id'); 
     }
 }

@@ -1,7 +1,8 @@
 
 import AbsemPesrtaProlanis from "../../components/dashboard/AbsenPesertaProlanis";
 import KaderWidget from "../../components/widget/KaderWidget";
-import PemeriksaanFisikComponent from "../../components/dashboard/PemeriksaaanComponent";
+import PemeriksaanWidget from "../../components/widget/PemeriksaanWidget";
+import PemeriksaanComponent from "../../components/dashboard/PemeriksaaanComponent";
 import PageMeta from "../../components/common/PageMeta";
 import { useAuth } from "../../context/AuthContext";
 
@@ -36,9 +37,15 @@ export default function Home() {
           </div>
         )}
 
+        {/* {hasAccess([2]) && (
+          <div className="col-span-12 space-y-6 xl:col-span-7">
+            <PemeriksaanWidget />
+          </div>
+        )} */}
+
         {hasAccess([2]) && (
           <div className="col-span-12">
-            <PemeriksaanFisikComponent />
+            <PemeriksaanComponent />
           </div>
         )}
 

@@ -70,10 +70,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/statistik-jadwal', [JadwalKegiatanController::class, 'widgetDashboardKader']);
     });
 
+    Route::middleware('role:2')->group(function () {
+        //hanya bisa di akses oleh administrasi
+        Route::get('/widget/statistik-pemeriksaan', [PemeriksaanController::class, 'getStatistikPemeriksaan']);
+    });
+
     Route::middleware('role:1,2,6')->group(function () {
 
         // Rute GET untuk menarik data peserta di tabel
-        Route::get('/pemeriksaan-fisik/peserta-hadir/{kegiatanId}', [PemeriksaanController::class, 'getPesertaHadir']);
+        Route::get('/pemeriksaan-fisik/peserta-hadir', [PemeriksaanController::class, 'getPesertaHadir']);
 
         // Rute POST untuk menyimpan/update form TTV
         Route::post('/upsert-pemeriksaan', [PemeriksaanController::class, 'upsertPemeriksaan']);

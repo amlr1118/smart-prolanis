@@ -15,17 +15,17 @@ return new class extends Migration
         $table->id();
         $table->unsignedBigInteger('jadwal_kegiatan_id'); // <-- TAMBAHAN WAJIB
         $table->unsignedBigInteger('pesertaid');
-        $table->unsignedBigInteger('perawatid')->nullable(); // Bisa diisi nanti
+        $table->unsignedBigInteger('perawatid'); // Bisa diisi nanti
         $table->unsignedBigInteger('dokterid')->nullable(); // Diisi saat Stasiun 3
         
-        $table->float('berat_badan')->nullable();
-        $table->float('tinggi_badan')->nullable();
-        $table->float('imt')->nullable();
-        $table->integer('tensi_sistolik')->nullable();
-        $table->integer('tensi_diastolik')->nullable();
-        $table->integer('gula_darah_puasa')->nullable();
-        $table->string('status_gula_darah')->nullable();
-        $table->string('aktivitas')->nullable();
+        $table->float('berat_badan');
+        $table->float('tinggi_badan');
+        $table->float('imt');
+        $table->integer('tensi_sistolik');
+        $table->integer('tensi_diastolik');
+        $table->integer('gula_darah_puasa');
+        $table->string('status_gula_darah');
+        $table->string('aktivitas');
         $table->string('catatan_dokter')->nullable(); // Ubah dari default(null) ke nullable()
         
         $table->timestamps();
