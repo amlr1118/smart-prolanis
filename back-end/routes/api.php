@@ -5,6 +5,7 @@ use App\Http\Controllers\ArsipKegiatanController;
 use App\Http\Controllers\JadwalKegiatanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PemeriksaanController;
+use App\Http\Controllers\PemeriksaanDokterController;
 use App\Http\Controllers\PesertaProlanisController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -82,5 +83,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         // Rute POST untuk menyimpan/update form TTV
         Route::post('/upsert-pemeriksaan', [PemeriksaanController::class, 'upsertPemeriksaan']);
+    });
+
+    Route::middleware('role:1,6')->group(function () {
+        Route::get('/pemeriksaan-dokter/antrean', [PemeriksaanDokterController::class, 'getAntreanDokter']);
+        Route::post('/pemeriksaan-dokter/simpan/{pemeriksaan_id}', [PemeriksaanDokterController::class, 'simpanPemeriksaanDokter']);
     });
 });

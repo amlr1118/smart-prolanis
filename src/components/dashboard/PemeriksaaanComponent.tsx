@@ -56,9 +56,15 @@ export default function PemeriksaanFisikComponent() {
 
   const [errors, setErrors] = useState<any>({});
 
-  const fetchPesertaAktif = async () => {
-    setLoading(true); // Aktifkan loading
+  // Tambahkan parameter isBackground dengan default false
+  const fetchPesertaAktif = async (isBackground = false) => {
+    // Hanya nyalakan loading jika BUKAN dari auto-refresh background
+    if (!isBackground) {
+      setLoading(true);
+    }
+    
     setIsNoActiveSchedule(false);
+    
     try {
       const res = await api.get(`/pemeriksaan-fisik/peserta-hadir`);
       setPesertaList(res.data.data);
@@ -67,20 +73,40 @@ export default function PemeriksaanFisikComponent() {
       if (res.data.detail_jadwal) {
         setJadwalInfo(res.data.detail_jadwal);
       }
+
+      // Jika ini adalah auto-refresh, trigger juga update pada widget
+      if (isBackground) {
+        setRefreshWidget(prev => prev + 1);
+      }
+
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
         setIsNoActiveSchedule(true);
         setPesertaList([]);
-      } else {
+      } else if (!isBackground) {
+        // Jangan tampilkan alert error terus-menerus jika background fetch gagal
         Swal.fire("Error", "Gagal memuat daftar peserta.", "error");
       }
     } finally {
-      setLoading(false); // Matikan loading
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
+    // 1. Fetch data pertama kali saat halaman dibuka (akan memunculkan loading)
     fetchPesertaAktif();
+
+    // 2. Buat interval auto-refresh setiap 15 detik (15000 milidetik)
+    const interval = setInterval(() => {
+      fetchPesertaAktif(true); // true = isBackground aktif (tanpa loading)
+    }, 15000);
+
+    // 3. Bersihkan interval jika perawat pindah ke halaman lain
+    return () => clearInterval(interval);
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredPeserta = pesertaList.filter((peserta) => {
@@ -212,7 +238,7 @@ export default function PemeriksaanFisikComponent() {
       {!loading && <PemeriksaanWidget refreshTrigger={refreshWidget} />}
 
       <div className="space-y-6">
-        {/* PANEL INFORMASI KEGIATAN (Skeleton/Loading State) */}
+{/*        
         {loading ? (
           <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] animate-pulse">
             <div className="h-5 bg-gray-200 rounded w-1/4 mb-4 dark:bg-gray-700"></div>
@@ -263,7 +289,7 @@ export default function PemeriksaanFisikComponent() {
               </div>
             </div>
           </div>
-        ) : null}
+        ) : null} */}
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -403,7 +429,7 @@ export default function PemeriksaanFisikComponent() {
           <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl dark:bg-gray-900 border dark:border-gray-800 flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
               <h3 className="font-semibold text-gray-800 text-lg dark:text-white">
-                Input Tanda-Tanda Vital
+                Input Pemeriksaan Peserta
               </h3>
               <button
                 onClick={closeModal}

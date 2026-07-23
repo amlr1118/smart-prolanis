@@ -137,6 +137,7 @@ class PemeriksaanController extends Controller
         $absensi = AbsenModel::with('relasikePeserta')
             ->where('kegiatanid', $kegiatanId)
             ->where('status_kehadiran', true)
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         // 3. Format data peserta
@@ -158,6 +159,8 @@ class PemeriksaanController extends Controller
                 'data_ttv' => $pemeriksaan
             ];
         });
+
+        
 
         // 4. Kembalikan data BESERTA ID Kegiatan agar bisa dipakai oleh React saat menyimpan form
         return response()->json([

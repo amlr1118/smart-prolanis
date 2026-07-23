@@ -42,7 +42,7 @@ export default function PemeriksaanWidget({ refreshTrigger = 0 }: WidgetProps) {
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Pasien Hadir</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Peserta Hadir</p>
             <h4 className="mt-1 text-title-md font-bold text-gray-800 dark:text-white/90">
               {totalHadir} <span className="text-sm font-medium text-gray-500">Orang</span>
             </h4>
