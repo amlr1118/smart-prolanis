@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalKegiatanModel;
 use App\Models\PemeriksaanModel;
+use App\Models\ResepObatModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -11,38 +12,27 @@ class PemeriksaanDokterController extends Controller
 {
     public function getAntreanDokter(Request $request)
     {
-        // Cari jadwal aktif hari ini
         $jadwalAktif = JadwalKegiatanModel::where('is_active', true)->where('status', 1)->first();
 
         if (!$jadwalAktif) {
-            return response()->json([
-                'message' => 'Tidak ada jadwal aktif saat ini.',
-                'data' => []
-            ], 404);
+            return response()->json(['message' => 'Tidak ada jadwal aktif saat ini.', 'data' => []], 404);
         }
 
         $kegiatanId = $jadwalAktif->id;
 
-        // Ambil pasien yang SUDAH diukur TTV oleh perawat hari ini
-        // Menggunakan join ke tabel pemeriksaan
-        $pemeriksaanHariIni = PemeriksaanModel::with('peserta')
+        $pemeriksaanHariIni = PemeriksaanModel::with('relasikePeserta')
             ->where('jadwal_kegiatan_id', $kegiatanId)
             ->orderBy('updated_at', 'desc')
             ->get();
 
         $dataAntrean = $pemeriksaanHariIni->map(function ($periksa) use ($kegiatanId) {
-            $peserta = $periksa->peserta;
-            $usia = $peserta->tanggal_lahir ? Carbon::parse($peserta->tanggal_lahir)->age : 0;
+            $peserta = $periksa->relasikePeserta;
+            $usia = $peserta->tanggal_lahir ? \Carbon\Carbon::parse($peserta->tanggal_lahir)->age : 0;
 
-            // AMBIL 3 RIWAYAT TERAKHIR (Untuk ditampilkan di layar Dokter)
+            // Ambil 3 riwayat terakhir
             $riwayat = PemeriksaanModel::where('pesertaid', $peserta->id)
-
-            
                 ->where('jadwal_kegiatan_id', '!=', $kegiatanId)
-                ->orderBy('created_at', 'desc')
-                ->take(3)
-                ->get()
-                ->map(function($r) {
+                ->orderBy('created_at', 'desc')->take(3)->get()->map(function ($r) {
                     return [
                         'tanggal' => $r->created_at->translatedFormat('d M Y'),
                         'berat_badan' => $r->berat_badan,
@@ -52,15 +42,18 @@ class PemeriksaanDokterController extends Controller
                     ];
                 });
 
+            // =========================================================
+            // PERBAIKAN: Ambil resep obat untuk pasien ini
+            // =========================================================
+            $resepObat = ResepObatModel::where('pemeriksaan_id', $periksa->id)->get();
+
             return [
                 'id' => $peserta->id,
-                'pemeriksaan_id' => $periksa->id, // Penting untuk update data nanti
+                'pemeriksaan_id' => $periksa->id,
                 'no_bpjs' => $peserta->no_bpjs,
                 'nama' => $peserta->nama,
                 'jenis_kelamin' => $peserta->jenis_kelamin,
                 'usia' => $usia,
-                
-                // Data TTV Hari ini (Dari Perawat)
                 'ttv_hari_ini' => [
                     'berat_badan' => $periksa->berat_badan,
                     'tinggi_badan' => $periksa->tinggi_badan,
@@ -69,12 +62,12 @@ class PemeriksaanDokterController extends Controller
                     'gula_darah' => $periksa->gula_darah_puasa,
                     'status_gula' => $periksa->status_gula_darah,
                 ],
-                
-                // Cek apakah dokter sudah mengisi catatan
                 'status_diperiksa_dokter' => $periksa->catatan_dokter ? true : false,
                 'catatan_dokter' => $periksa->catatan_dokter,
-                
-                // Riwayat Pemeriksaan Sebelumnya
+
+                // Masukkan data resep ke JSON Response
+                'resep_obat' => $resepObat,
+
                 'riwayat_terakhir' => $riwayat
             ];
         });
@@ -88,12 +81,9 @@ class PemeriksaanDokterController extends Controller
 
     public function simpanPemeriksaanDokter(Request $request, $pemeriksaan_id)
     {
-        // Validasi input dokter
+        // 1. Validasi sederhana
         $request->validate([
             'catatan_dokter' => 'required|string',
-            // 'resep_obat' => 'nullable|string', // Aktifkan jika Anda punya kolom resep_obat di tabel
-        ], [
-            'catatan_dokter.required' => 'Catatan / Diagnosis Dokter wajib diisi.',
         ]);
 
         $pemeriksaan = PemeriksaanModel::find($pemeriksaan_id);
@@ -102,15 +92,33 @@ class PemeriksaanDokterController extends Controller
             return response()->json(['message' => 'Data pemeriksaan tidak ditemukan.'], 404);
         }
 
-        // Update data pemeriksaan dengan inputan dokter
+        // 2. Simpan Catatan Dokter
         $pemeriksaan->update([
             'catatan_dokter' => $request->catatan_dokter,
-            // 'resep_obat' => $request->resep_obat, // Aktifkan jika ada
-            'dokterid' => auth()->user()->id, // Menyimpan ID Dokter yang memeriksa
+            'dokterid'       => auth()->user()->id,
         ]);
 
-        return response()->json([
-            'message' => 'Data konsultasi dokter berhasil disimpan.'
-        ], 200);
+        // 3. Simpan Resep Obat
+        // Hapus resep lama agar tidak duplikat saat dokter meng-edit
+        ResepObatModel::where('pemeriksaan_id', $pemeriksaan_id)->delete();
+
+        // Insert resep baru (Looping array dari React)
+        if ($request->has('resep_obat') && is_array($request->resep_obat)) {
+            foreach ($request->resep_obat as $obat) {
+                // Cegah baris kosong tersimpan
+                if (!empty($obat['nama_obat']) && !empty($obat['dosis'])) {
+                    ResepObatModel::create([
+                        'pemeriksaan_id' => $pemeriksaan_id,
+                        'nama_obat'      => $obat['nama_obat'],
+                        'dosis'          => $obat['dosis'],
+                        'jumlah'         => $obat['jumlah'] ?: 1, // Jika kosong, set default 1
+                        'keterangan'     => $obat['keterangan'] ?? '-',
+                        'status_tebus'   => 0,
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Berhasil disimpan'], 200);
     }
 }
